@@ -1,0 +1,86 @@
+/* button{
+    padding:1rem ;
+    background-color: rgb(182, 182, 247);
+    border: none;
+    border-radius: 10px;
+    width: fit-content;
+    position: absolute;
+    z-index: 1;
+  }
+
+  #rotateButton{
+    border-radius: 50%;
+    padding: 10px;
+    width: max-content;
+  }
+  #rotateButton>img{
+    width: 2rem;
+  }
+
+  .container {
+    display: flex;
+    height: 100vh;
+    
+  }
+  
+  .sidebar {
+    flex: 2; 
+    background-color: #571616;
+    overflow-y: auto; 
+  }
+  
+  .canvas-container {
+    flex: 2; 
+    position: relative;
+    background-color: burlywood;
+  } */
+
+
+  .container {
+    display: flex;
+    height: 100vh;
+    /* position: relative; */
+    /* overflow-x: hidden; */
+  }
+  
+  /* .sidebar {
+    width: 15%;
+    background-color: #571616;
+    position: relative;
+  } */
+  
+  .canvas-container {
+    width: 100%; /* Set the width to 100% to fill the parent container */
+    height: 100%; /* Set the height to 100% to fill the parent container */
+    /* position: relative; */
+    /* background-color: burlywood; */
+  }
+  
+  .canvas{
+    position: initial;
+  }
+  button {
+    padding: 1rem;
+    background-color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 10px;
+    width: fit-content;
+    position: absolute;
+    right: 0;
+    z-index: 1;
+ 
+  }
+  #switchCameraButton,#controlsButton{
+    width: 200px;
+    margin: 10px;
+    background-color: white;
+  }
+  #rotateButton {
+    border-radius: 50%;
+    padding: 10px;
+    width: max-content;
+  }
+  
+  #rotateButton > img {
+    width: 2rem;
+  }

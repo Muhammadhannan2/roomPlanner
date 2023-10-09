@@ -1,0 +1,6 @@
+newmtl wall
+
+
+illum 1
+
+map_Kd wall_texture.jpg
