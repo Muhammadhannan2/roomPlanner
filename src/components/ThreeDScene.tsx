@@ -6,6 +6,7 @@ import './ThreeDScene.css'
 import React from 'react';
 // import Data from '../context/Data';
 import contextState from '../context/contextState';
+
 // import SideBar from './sideBar/SideBar';
 
 // const objectsData:any = []
@@ -154,10 +155,11 @@ const ThreeDScene = () => {
         <button id='switchCameraButton'style={{top:'8%'}} onClick={switchCamera} >Switch Camera</button>
         <button id='controlsButton' disabled={activeCamera==='orthographic'}onClick={switchControls} style={{top:'14%'}}>Controls {controls=== true ?"enabled":"disabled"}</button>
         <button id='rotateButton' ref={rotateButtonRef} style={{ borderRadius:"50%",padding:"10px",width:"max-content",height:"fit-content",border:'none',display:'none',}}>
-        <img id='rotateImage' src="src/assets/SceneAssets/reload-icon-16903.png" alt="" style={{width:"2rem",height:"2rem"}}/>
+        {/* <img id='rotateImage' src="src/assets/SceneAssets/reload-icon-16903.png" alt="" style={{width:"2rem",height:"2rem"}}/> */}
+        <img id='rotateImage' src="../assets/SceneAssets/reload-icon-16903.png" alt="" style={{width:"2rem",height:"2rem"}}/>
       </button>
         <button id='deleteButton' ref={deleteButtonRef} style={{ borderRadius:"50%",padding:"10px",width:"max-content",height:"fit-content",border:'none',display:'none',}}>
-        <img id='deleteImage' src="src/assets/SceneAssets/delete-icon3.png" alt="del" style={{width:"2rem",height:"2rem", background:'none'}}/>
+        <img id='deleteImage' src="../assets/SceneAssets/delete-icon3.png" alt="del" style={{width:"2rem",height:"2rem", background:'none'}}/>
       </button>
         {/* <button onClick={()=>addObjects(tub)} ref={tubButtonRef} id='tub' style={{top:'5%'}} >Add Tub</button>
         <button onClick={()=>addObjects(toiletSeat)} ref={toiletSeatButtonRef} id='toiletSeat'  style={{top:'15%'}}>Add toilet Seat</button>
