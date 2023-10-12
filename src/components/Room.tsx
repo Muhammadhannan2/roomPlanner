@@ -1,141 +1,11 @@
-import { useLoader, useThree } from "@react-three/fiber";
-import { useEffect, useRef} from "react";
+import { useLoader, useThree,useFrame } from "@react-three/fiber";
+import { useEffect, useRef,useContext,useState} from "react";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import Model from './Model';
 import { Vector2, Vector3 } from "three";
 import React from "react";
 import axios from "axios";
-//import contextState from "../context/contextState";
-
-// const objectsData=[
-//   {
-//       id:1,
-//       materialUrl:'toiletSeat.mtl',
-//       modelUrl:'noir.obj',
-//       name:'Tub_Model',
-//       positionX:0,
-//       positionY:0,
-//       positionZ:0,
-//       scaleX:0.02,
-//       scaleY:0.02,
-//       scaleZ:0.02,
-//       rotationX:0,
-//       rotationY:0,
-//       rotationZ:-0.02,
-//       minY:null,
-//       maxY:null,
-//       rotationAxis:'y',
-//       restrictVertical:false,
-//       ground:false,
-//       size:'large'
-//   },
-//   {
-//       id:2,
-//       materialUrl:'toiletSeat.mtl',
-//       modelUrl:'toiletSeat.obj',
-//       name:'Toilet_seat',
-//       positionX:20,
-//       positionY:0,
-//       positionZ:0,
-//       scaleX:0.04,
-//       scaleY:0.04,
-//       scaleZ:0.04,
-//       rotationX:-89.5,
-//       rotationY:0,
-//       rotationZ:11,
-//       minY:null,
-//       maxY:null,
-//       rotationAxis:'z',
-//       restrictVertical:false,
-//       ground:false,
-//       size:'small'
-//   },
-//   {
-//       id:3,
-//       materialUrl:'toiletSeat.mtl',
-//       modelUrl:'shower.obj',
-//       name:'shower',
-//       positionX:0,
-//       positionY:29,
-//       positionZ:-49.5,
-//       scaleX:0.023,
-//       scaleY:0.023,
-//       scaleZ:0.023,
-//       rotationX:29.85,
-//       rotationY:0,
-//       rotationZ:0,
-//       minY:28,
-//       maxY:34,
-//       rotationAxis:'z',
-//       restrictVertical:true,
-//       ground:false,
-//       size:'small'
-//   },
-// ]
-// const objectsData:any = []
-// const tub = {
-//   id:1,
-//   materialUrl:'toiletSeat.mtl',
-//   modelUrl:'noir.obj',
-//   name:'Tub_Model',
-//   positionX:0,
-//   positionY:0,
-//   positionZ:0,
-//   scaleX:0.02,
-//   scaleY:0.02,
-//   scaleZ:0.02,
-//   rotationX:0,
-//   rotationY:0,
-//   rotationZ:-0.02,
-//   minY:null,
-//   maxY:null,
-//   rotationAxis:'y',
-//   restrictVertical:false,
-//   ground:false,
-//   size:'large'
-// }
-// const toiletSeat = {
-//   id:2,
-//   materialUrl:'toiletSeat.mtl',
-//   modelUrl:'toiletSeat.obj',
-//   name:'Toilet_seat',
-//   positionX:20,
-//   positionY:0,
-//   positionZ:0,
-//   scaleX:0.04,
-//   scaleY:0.04,
-//   scaleZ:0.04,
-//   rotationX:-89.5,
-//   rotationY:0,
-//   rotationZ:11,
-//   minY:null,
-//   maxY:null,
-//   rotationAxis:'z',
-//   restrictVertical:false,
-//   ground:false,
-//   size:'small'
-// }
-// const shower = {
-//   id:3,
-//   materialUrl:'toiletSeat.mtl',
-//   modelUrl:'shower.obj',
-//   name:'shower',
-//   positionX:0,
-//   positionY:29,
-//   positionZ:-49.5,
-//   scaleX:0.023,
-//   scaleY:0.023,
-//   scaleZ:0.023,
-//   rotationX:29.85,
-//   rotationY:0,
-//   rotationZ:0,
-//   minY:28,
-//   maxY:34,
-//   rotationAxis:'z',
-//   restrictVertical:true,
-//   ground:false,
-//   size:'small'
-// }
+import contextState from '../context/contextState';
 interface props{
   rotateButtonRef:any
   deleteButtonRef:any
@@ -148,11 +18,16 @@ const baseDevelopmetUrl = 'src/'
 const baseProductionUrl = '/'
 
 export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjects}:props) {
+
+  // const [wall4Visibility, setWall4Visibility] = useState(true)
+  const data = useContext(contextState);
+  const {setControls} = data
   // const data = useContext(contextState)
    const { camera, scene,raycaster} = useThree();
+   const [wall4Visibility, setWall4Visibility] = useState(true)
   //  console.log(size)
   // setSize(700,450,undefined,0,0)
- // const [isActionsEnabled, setisActionsEnabled] = useState(true)
+//  const [currentRotation, setCurrentRotation] = useState(0)
   
   //  const canvas = gl.domElement;
   var isDragging = false;
@@ -192,6 +67,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
     
       const found = intersect(clickMouse);
       if (found.length > 0) {
+
         if (found[0].object.userData.draggable) {
           draggable.current = found[0].object
           //console.log(found)
@@ -220,8 +96,9 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
       }
 
       function mouseDown(_event:any){
+        
         if(draggable.current !=null){
-  
+          setControls(false)
           const found = intersect(clickMouse);
           //console.log(found)
           if (found.length > 0 && found[0].object.userData.draggable) {
@@ -249,6 +126,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
       function mouseMove(event:any){
 
         if (isDragging && draggable.current != null ) {
+          // setControls(false)
           const newMousePosition = new Vector2(
             (event.clientX / window.innerWidth) * 2 - 1,
             -(event.clientY / window.innerHeight) * 2 + 1
@@ -388,6 +266,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
         // event.stopPropagation()
         if (isDragging) {
           isDragging = false;
+          setControls(true)
           // setisDragging(false) ;
           // draggable = null as any 
           // rotateButton.style.display = 'none';
@@ -399,55 +278,84 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
       }
       function rotate(_event:any){
        // console.log(isObjectSelected)
-        if (draggable.current !==null) {
+       //let currentRotation = 0; 
+      //  setCurrentRotation(currentRotation+(Math.PI / 4))
+      //  currentRotation += Math.PI / 4;
+      if (draggable.current !==null) {
+        // let newRotation = currentRotation + (Math.PI / 4);
+        // console.log(newRotation);
           if(draggable.current.userData.restrictVertical){
             if(draggable.current.userData.rotationAxis==='y'){
-              draggable.current.rotation.y +=0.5
+              // draggable.current.rotation.y +=0.5
+              draggable.current.rotation.y += Math.PI / 2;
+              console.log('rotation', draggable.current.rotation.y)
             }
             else{
-              draggable.current.rotation.z +=0.5
+              // draggable.current.rotation.z +=0.5
+              draggable.current.rotation.z += Math.PI / 2;
+              console.log('rotation', draggable.current.rotation.y)
             }
           }
           else{
             if(draggable.current.userData.rotationAxis==='y'){
-              draggable.current.rotation.y +=0.5
+              // draggable.current.rotation.y +=0.5
+              draggable.current.rotation.y += Math.PI / 2;
+              console.log('rotation', draggable.current.rotation.y)
             }
             else if(draggable.current.userData.rotationAxis==='z'){
-              draggable.current.rotation.z +=0.5
+              // draggable.current.rotation.z +=0.5
+              draggable.current.rotation.z += Math.PI / 2;
+              console.log('rotation', draggable.current.rotation.z)
               console.log('2')
             }
             else if(draggable.current.userData.rotationAxis==='x'){
-              draggable.current.rotation.x +=0.5
+              // draggable.current.rotation.x +=0.5
+              draggable.current.rotation.x += Math.PI / 2;
+              console.log('rotation', draggable.current.rotation.y)
               console.log('3')
             }
           }
-          
         }
       }
+
 useEffect(() => {
-  //activeCamera === 'perspective' ? setisActionsEnabled(true) : setisActionsEnabled(false); 
-  // if(isActionsEnabled){
+
+    // console.log(camera.position) 
     raycaster.camera = camera;
-    // deleteButtonRef.current.addEventListener('click',()=>removeObjects(draggable.current.userData.id))
+    deleteButtonRef.current.addEventListener('click',()=>removeObjects(draggable.current.userData.id))
     rotateButtonRef.current.addEventListener('click',rotate)
     window.addEventListener('click',onClick)
     window.addEventListener('mousemove',mouseMove)
     window.addEventListener('mousedown',mouseDown)
     window.addEventListener('mouseup',mouseUp)
-  // }
+    // if (camera.position.x >= 90 || camera.position.x <= 120) {
+    //   setWall4Visibility(false);
+    //   // setWall4Visibility(true);
+    //   console.log(wall4Visibility)
+    // } else {
+    //   // setWall4Visibility(false);
+    //   setWall4Visibility(true);
+    //   console.log(wall4Visibility)
+    // }
+    console.log(camera)
   return () => {
     window.removeEventListener('click', onClick);
     window.removeEventListener('mousedown',mouseDown)
     window.removeEventListener('mousemove',mouseMove)
     window.removeEventListener('mouseup',mouseUp)
   }
-}, [camera])
+}, [camera,camera.position,wall4Visibility])
+
+// useFrame(() => {
+//   console.log('Camera Position:', camera.position);
+// });
 
     return (
       <>
         {/* <button id='controlsButton' disabled={activeCamera==='orthographic'}onClick={switchControls} style={{top:'10%'}}>Controls {controls=== true ?"enabled":"disabled"}</button> */}
           <CreateFloor />
-          <CreateWalls />
+          <CreateWalls camera = {camera} wall4Visibility={wall4Visibility} setWall4Visibility={setWall4Visibility}/>
+          {/* <CreateWalls wall4Visibility= {wall4Visibility}/> */}
           {objectsData && objectsData.map((item:any) => (
                 <Model
                 key={item.id} // Don't forget to add a unique key when mapping through components
@@ -503,7 +411,7 @@ useEffect(() => {
 
   const wallThickness = 0.3;
   
-export  function  CreateWalls () {
+export  function  CreateWalls ({camera,wall4Visibility,setWall4Visibility}) {
     // Front wall
   //createWall(100, 40, wallThickness, 0, 20, -46.8); //(length,height, thickness,left right,up down, forward backward)
 
@@ -513,11 +421,27 @@ export  function  CreateWalls () {
   // Right wall
   //createWall(wallThickness, 40, 100, 49.8, 20, 3); //(thickness,height,left right, forward backdward,up down, left right)
 
+  //back wall
+  //createWall(100, 40, wallThickness, 0, 20, -46.8); //(length,height, thickness,left right,up down, forward backward)
+ 
+//   useEffect(() => { 
+//     // && camera.position.z >=160 && camera.position.z <=132
+//     if (camera.position.x >= -90 && camera.position.x <= 120  ) {
+//      setWall4Visibility(false);
+//      console.log(wall4Visibility)
+//     //  console.log(first)
+//    } else {
+//      setWall4Visibility(true);
+//      console.log(wall4Visibility)
+//    }
+//    console.log(camera.position);
+// }, [wall4Visibility,camera.position.x,camera]); 
     return (
       <>
-        <Wall width={100} height={40} depth={wallThickness} x={0} y={20} z={-49.8} name="wall1" />
-        <Wall width={wallThickness} height={40} depth={100} x={-49.8} y={20} z={0} name="wall2" />
-        <Wall width={wallThickness} height={40} depth={100} x={49.8} y={20} z={0} name="wall3" />
+        <Wall width={100} height={40} depth={wallThickness} x={0} y={20} z={-49.8} name="wall1" visible={true}/>
+        <Wall width={wallThickness} height={40} depth={100} x={-49.8} y={20} z={0} name="wall2" visible={true}/>
+        <Wall width={wallThickness} height={40} depth={100} x={49.8} y={20} z={0} name="wall3" visible={true}/>
+        {/* <Wall width={100} height={40} depth={wallThickness} x={0} y={20} z={49.8} name="wall4" visible={wall4Visibility}/> */}
       </>
     );
   };
@@ -532,15 +456,16 @@ interface wallProps{
     y:any,
     z:any,
     name:any,
+    visible:boolean
 }
-  const Wall = ({ width, height, depth, x, y, z, name }:wallProps) => {
+  const Wall = ({ width, height, depth, x, y, z, name,visible }:wallProps) => {
 
     const materials = useLoader(MTLLoader, `${baseProductionUrl}assets/SceneAssets/textures/wall.mtl`);
     materials.preload();
     const wallMaterial = materials.materials['wall'];
-    console.log(wallMaterial)
+    // console.log(wallMaterial)
     return (
-      <mesh receiveShadow castShadow position={[x, y, z]} userData={{ ground: true, name }}>
+      <mesh receiveShadow castShadow position={[x, y, z]} userData={{ ground: true, name }} visible={visible}>
         <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial map={wallMaterial.map} />
       </mesh>
