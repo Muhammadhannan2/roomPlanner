@@ -21,7 +21,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
 
   // const [wall4Visibility, setWall4Visibility] = useState(true)
   const data = useContext(contextState);
-  const {setControls} = data
+  const {setControls,controls,roomWidth,roomLength} = data
   // const data = useContext(contextState)
    const { camera, scene,raycaster} = useThree();
    const [wall4Visibility, setWall4Visibility] = useState(true)
@@ -67,7 +67,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
     
       const found = intersect(clickMouse);
       if (found.length > 0) {
-
+        console.log(found)
         if (found[0].object.userData.draggable) {
           draggable.current = found[0].object
           //console.log(found)
@@ -98,10 +98,10 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
       function mouseDown(_event:any){
         
         if(draggable.current !=null){
-          setControls(false)
           const found = intersect(clickMouse);
           //console.log(found)
           if (found.length > 0 && found[0].object.userData.draggable) {
+            setControls(false)
              isDragging = true
             //setisDragging(true);
             draggable.current = found[0].object;
@@ -131,6 +131,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
             (event.clientX / window.innerWidth) * 2 - 1,
             -(event.clientY / window.innerHeight) * 2 + 1
           );
+          console.log(draggable.current.position)
          const found = intersect(newMousePosition);
           if (found.length > 0) {
             for (let i = 0; i < found.length; i++) {
@@ -178,16 +179,18 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                   // && target.y >= minY && target.y <= maxY
                 ) {
                  // target.z = Math.max(target.z, -46.7);
-                  target.x = Math.max(Math.min(target.x, 49.3), -49.3);
-                  target.z = Math.max(Math.min(target.z, 49.5), -49.5);
+                  // target.x = Math.max(Math.min(target.x, 49.3), -49.3);
+                  // target.z = Math.max(Math.min(target.z, 49.5), -49.5);
                   
                   target.y = Math.min(Math.max(target.y, minY), maxY);
-                  draggable.current.position.y = target.y;
                   draggable.current.position.x = target.x;
+                  draggable.current.position.y = target.y;
                   draggable.current.position.z = target.z;
-                  if (target.z <= -40.7) {
+                  if (target.z <= -((roomLength/2)-10)) {
+                    // if (target.z <= -40.7) {
                     if(draggable.current.userData.rotationAxis==='y'){
                       draggable.current.rotation.y = 1.6;
+                      console.log('here')
                     }
                     else{
                       draggable.current.rotation.z = 0;
@@ -196,7 +199,8 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     // Your rotation logic for Z-axis here
                     // target.z = Math.max(Math.min(target.z, 44.5), -46.7);
                   }
-                  if (target.x >= 43 && target.z >=-49.5) {
+                  if (target.x >= ((roomWidth/2)-8) && target.z >=-(roomLength/2)-2) {
+                    // if (target.x >= 43 && target.z >=-49.5) {
                     // Rotate for X-axis hit
                     // Your rotation logic for X-axis here
                     if(draggable.current.userData.rotationAxis==='y'){
@@ -207,7 +211,8 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     }
                     // target.z = Math.max(Math.min(target.z, 44.5), -48);
                   }
-                  if (target.x <= -43 && target.z >=-49.5) {
+                  if (target.x <= -((roomWidth/2)-8) && target.z >=-(roomLength/2)-2) {
+                    // if (target.x <= -43 && target.z >=-49.5) {
                     // Rotate for X-axis hit
                     // Your rotation logic for X-axis here
                     if(draggable.current.userData.rotationAxis==='y'){
@@ -226,23 +231,45 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                 const maxY = 10;
                 // const minZ = -33.5;
                 var minZ:any;
-                const maxZ = 35;
+                var maxZ:any;
+                // const maxZ = (roomLength/2)-20;
+                // const maxZ = 35;
                 if(draggable.current.userData.size==='small'){
-                   minX = -48;
-                   maxX = 48;
-                   minZ = -49;
+                  //  minX = -48;
+                  //  maxX = 48;
+                  //  minZ = -49;
+                   minX = -((roomWidth/2)-2);
+                   maxX = ((roomWidth/2)-2);
+                   minZ = -((roomLength/2)-1);
+                   maxZ = Math.floor(roomLength/3-2);
+                   if(roomLength>100){
+                    minZ = -((roomLength/2)-1);
+                    maxZ = Math.floor(roomLength/2-15);
+                   }
+                  //  maxZ = (roomLength/3)-1;
+                   console.log(maxZ)
                 }
                 else if(draggable.current.userData.size==='large'){
-                   minX = -42.5;
-                   maxX = 42.5;
-                   minZ = -33.5;
+                  //  minX = -42.5;
+                  //  maxX = 42.5;
+                  //  minZ = -33.5;
+                  minX = -((roomWidth/2)-8.5);
+                  maxX = ((roomWidth/2)-8.5);
+                  minZ = -(roomLength/3);
+                  maxZ = Math.floor((roomLength/2)-10);
+                  if(roomLength>100){
+                    minZ = -((roomLength/2)-10);
+                    maxZ = Math.floor(roomLength/2-10);
+                   }
+                  // minZ = -2;
                 }
                 if (
                   target.x >= minX && target.x <= maxX &&
                   target.y >= minY && target.y <= maxY
                   && target.z >= minZ && target.z <= maxZ
                 ) {
-                  target.x = Math.max(Math.min(target.x, 49.3), -49.3);
+                  // target.x = Math.max(Math.min(target.x, 40.3), -40.3);
+                  // target.x = Math.max(Math.min(target.x, 49.3), -49.3);
                   draggable.current.position.x = target.x;
                   draggable.current.position.z = target.z;
       
@@ -323,6 +350,7 @@ useEffect(() => {
     // console.log(camera.position) 
     raycaster.camera = camera;
     deleteButtonRef.current.addEventListener('click',()=>removeObjects(draggable.current.userData.id))
+    // deleteButtonRef.current.addEventListener('click',setControls(true))
     rotateButtonRef.current.addEventListener('click',rotate)
     window.addEventListener('click',onClick)
     window.addEventListener('mousemove',mouseMove)
@@ -344,7 +372,7 @@ useEffect(() => {
     window.removeEventListener('mousemove',mouseMove)
     window.removeEventListener('mouseup',mouseUp)
   }
-}, [camera,camera.position,wall4Visibility])
+}, [camera,camera.position,roomLength,roomWidth])
 
 // useFrame(() => {
 //   console.log('Camera Position:', camera.position);
@@ -389,6 +417,8 @@ useEffect(() => {
 
 
   export function CreateFloor () {
+    const data = useContext(contextState);
+    const {roomWidth,roomLength} = data
 
     const materials = useLoader(MTLLoader, `${baseProductionUrl}assets/SceneAssets/model/floor.mtl`);
     materials.preload();
@@ -397,7 +427,7 @@ useEffect(() => {
     
       return (
         <mesh receiveShadow castShadow userData={{ ground: true, name:'floor' }}>
-          <boxGeometry args={[100, 2, 100]} />
+          <boxGeometry args={[roomWidth, 2, roomLength]} />
           <meshPhongMaterial {...customMaterial} />
         </mesh>
       );
@@ -436,11 +466,16 @@ export  function  CreateWalls ({camera,wall4Visibility,setWall4Visibility}) {
 //    }
 //    console.log(camera.position);
 // }, [wall4Visibility,camera.position.x,camera]); 
+const data = useContext(contextState);
+const {roomWidth,roomLength,wallHeight} = data
     return (
       <>
-        <Wall width={100} height={40} depth={wallThickness} x={0} y={20} z={-49.8} name="wall1" visible={true}/>
-        <Wall width={wallThickness} height={40} depth={100} x={-49.8} y={20} z={0} name="wall2" visible={true}/>
-        <Wall width={wallThickness} height={40} depth={100} x={49.8} y={20} z={0} name="wall3" visible={true}/>
+        <Wall width={roomWidth} height={wallHeight} depth={wallThickness} x={0} y={wallHeight/2} z={-((roomLength/2)-0.2)} name="wall1" visible={true} rotationX={0} rotationY={0} rotationZ={0}/>
+        <Wall width={roomLength} height={wallHeight} depth={wallThickness} x={-(roomWidth/2)} y={wallHeight/2} z={0} name="wall2" visible={true} rotationX={0} rotationY={20.42} rotationZ={0}/>
+        <Wall width={roomLength} height={wallHeight} depth={wallThickness} x={roomWidth/2} y={wallHeight/2} z={0} name="wall3" visible={true} rotationX={0} rotationY={-20.42} rotationZ={0}/>
+        {/* <Wall width={wallThickness} height={40} depth={100} x={-49.8} y={20} z={0} name="wall2" visible={true} rotationX={} rotationY={} rotationZ={}/>
+        <Wall width={wallThickness} height={40} depth={100} x={49.8} y={20} z={0} name="wall3" visible={true} rotationX={} rotationY={} rotationZ={}/> */}
+
         {/* <Wall width={100} height={40} depth={wallThickness} x={0} y={20} z={49.8} name="wall4" visible={wall4Visibility}/> */}
       </>
     );
@@ -456,16 +491,19 @@ interface wallProps{
     y:any,
     z:any,
     name:any,
-    visible:boolean
+    visible:boolean,
+    rotationX :any
+    rotationY :any
+    rotationZ :any
 }
-  const Wall = ({ width, height, depth, x, y, z, name,visible }:wallProps) => {
+  const Wall = ({ width, height, depth, x, y, z, name,visible,rotationX,rotationY,rotationZ }:wallProps) => {
 
     const materials = useLoader(MTLLoader, `${baseProductionUrl}assets/SceneAssets/textures/wall.mtl`);
     materials.preload();
     const wallMaterial = materials.materials['wall'];
     // console.log(wallMaterial)
     return (
-      <mesh receiveShadow castShadow position={[x, y, z]} userData={{ ground: true, name }} visible={visible}>
+      <mesh receiveShadow castShadow position={[x, y, z]} userData={{ ground: true, name }} visible={visible} rotation={[rotationX,rotationY,rotationZ]} >  
         <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial map={wallMaterial.map} />
       </mesh>

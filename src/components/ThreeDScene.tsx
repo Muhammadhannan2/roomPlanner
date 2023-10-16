@@ -121,13 +121,14 @@ const ThreeDScene = () => {
       // }, []);
 
       const removeObjects = useCallback((id:number) => {
-         setObjectsData((prevObjectsData:any) =>
-         prevObjectsData.filter((object:any) => object.id !== id));
+        setObjectsData((prevObjectsData:any) =>
+        prevObjectsData.filter((object:any) => object.id !== id));
+        setControls(true)
         if(rotateButtonRef.current && deleteButtonRef.current){
           rotateButtonRef.current!.style.display = 'none';
           deleteButtonRef.current!.style.display = 'none';
         }
-      }, []);
+      }, [controls]);
 
       useEffect(() => {
         activeCamera ==="orthographic" ? setControls(false) : setControls(true)
@@ -137,7 +138,7 @@ const ThreeDScene = () => {
           // console.log(canvas)
         }
         return () => {
-          
+        
         }
       }, [activeCamera])
       //console.log(document.getElementById('canvas')?.style.position)
