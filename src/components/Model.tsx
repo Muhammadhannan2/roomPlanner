@@ -1,4 +1,4 @@
-import  { useEffect, useMemo, useState} from 'react';
+import  { useEffect, useMemo, useState,useRef,useContext} from 'react';
 import { Mesh, MeshPhongMaterial } from 'three'
 // import { useLoader } from '@react-three/fiber'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
@@ -6,7 +6,10 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as THREE from 'three';
 import React from 'react';
-
+import { Wireframe, useGLTF } from '@react-three/drei';
+import { useLoader,useFrame } from '@react-three/fiber';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import contextState from '../context/contextState';
 
 // const loadModel = async (objLoader: any, mtlLoader: any, {materialUrl, modelUrl, name,positionX,positionY,positionZ,scaleX,scaleY,scaleZ,rotationX,rotationY,rotationZ,rotationAxis,restrictVertical,ground} :ModelProps) => {
 const loadModel = async (objLoader: any, mtlLoader: any, props: ModelProps) => {
@@ -127,3 +130,79 @@ const Model: React.FC<ModelProps> = (props) => {
 
 
   export default Model;
+
+
+  
+  
+  export const Door = (props) => {
+    // const gltf = useLoader(GLTFLoader, 'src/assets/SceneAssets/gltfModel/toilet_seat/door/scene.gltf')
+    const {nodes,materials} = useGLTF('src/assets/SceneAssets/gltfModel/toilet_seat/door/scene.gltf')
+    // console.log(gltf)
+    // const rectangleGeometry = new THREE.BoxGeometry(1, 1, 1); 
+    const doorRef:any = useRef();
+    const rectangleRef:any = useRef();
+  // Create a material for the rectangle
+  // const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); 
+  const data = useContext(contextState);
+  const {activeCamera} = data
+  // useFrame(() => {
+  useEffect(() => {
+    if (doorRef.current && activeCamera==='orthographic') {
+      // Calculate the width and height of the door
+      const doorBoundingBox = new THREE.Box3().setFromObject(doorRef.current);
+      const doorWidth = doorBoundingBox.max.x - doorBoundingBox.min.x;
+      const doorHeight = doorBoundingBox.max.y - doorBoundingBox.min.y;
+      // const doorWidth = doorBoundingBox.max.x - doorBoundingBox.min.x;
+      // Set the position to match the door's position
+      rectangleRef.current.position.copy(doorRef.current.position);
+      // rectangleRef.current.rotation.copy(doorRef.current.rotation);
+
+      // Set the scale to match the door's width and height
+      // rectangleRef.current.scale.set(doorWidth, 0.1, 2.3);
+      if(doorRef.current.rotation.z === 0 ){
+        rectangleRef.current.position.x = doorRef.current.position.x + -15
+      }
+      else if (doorRef.current.rotation.z === 3.15 ) {
+        rectangleRef.current.position.x = doorRef.current.position.x + 15
+      }
+      else if (doorRef.current.rotation.z === 1.58 ) {
+        rectangleRef.current.rotation.y = Math.PI /2
+        // rectangleRef.current.rotation.y = 1
+        rectangleRef.current.position.z = doorRef.current.position.z +15
+      }
+      rectangleRef.current.scale.set(30, 0.4, 16);
+      //     rectangleRef.current.position.y = 1; 
+          // rectangleRef.current.position.x = 33; 
+
+      // You can use an EdgesGeometry to create only the outline
+      const edges = new THREE.EdgesGeometry(rectangleRef.current.geometry);
+      const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+      const outline = new THREE.LineSegments(edges, outlineMaterial);
+      outline.renderOrder = 1; // Ensure the outline appears over the filled rectangle
+      rectangleRef.current.add(outline);
+    }
+  // });
+  },[activeCamera]);
+
+  useEffect(() => {
+    if (doorRef.current) {
+      doorRef.current.userData.name = 'door'; 
+      doorRef.current.userData.draggable = true; 
+      doorRef.current.userData.ground = false; 
+    }
+  }, [])
+  
+  // console.log(rectangleRef)
+    return (
+      <group {...props} dispose={null}>
+      <mesh ref={doorRef} geometry={nodes.Door_low002_Door_0.geometry} material={materials.Door} rotation={[-Math.PI / 2, 0, 0]} scale={15} position={[48,17,0]} userData={{name:'door',draggable:true,ground:false,restrictVertical:true,size:'large',rotationAxis:'z',minY:18,maxY:18}}/>
+            {activeCamera==='orthographic' && 
+           <mesh ref={rectangleRef}>
+         <boxGeometry args={[1, 1, 1]} />
+       <meshBasicMaterial visible={false} /> 
+      </mesh>
+     } 
+    </group>
+    )
+  }
+  useGLTF.preload('src/assets/SceneAssets/gltfModel/toilet_seat/door/scene.gltf')

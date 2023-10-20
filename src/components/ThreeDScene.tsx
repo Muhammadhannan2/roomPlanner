@@ -6,6 +6,7 @@ import './ThreeDScene.css'
 import React from 'react';
 // import Data from '../context/Data';
 import contextState from '../context/contextState';
+// import { Door } from './Model';
 
 // import SideBar from './sideBar/SideBar';
 
@@ -98,9 +99,9 @@ const basin = {
 
 const ThreeDScene = () => {
   const data = useContext(contextState);
-  const {objectsData,setObjectsData,controls,setControls} = data
+  const {objectsData,setObjectsData,controls,setControls,activeCamera, setActiveCamera} = data
   // const [objectsData, setObjectsData] = useState<any>([tub,toiletSeat,shower])
-  const [activeCamera, setActiveCamera] = useState('perspective');
+  // const [activeCamera, setActiveCamera] = useState('perspective');
   //  const [controls, setControls] = useState(true);
    const rotateButtonRef = useRef<HTMLButtonElement>(null)
    const deleteButtonRef = useRef<HTMLButtonElement>(null)
@@ -137,6 +138,7 @@ const ThreeDScene = () => {
           canvas.style.position = 'static';
           // console.log(canvas)
         }
+        
         return () => {
         
         }
@@ -188,6 +190,7 @@ const ThreeDScene = () => {
 
           <Suspense fallback={null}>
             <Room rotateButtonRef={rotateButtonRef} deleteButtonRef={deleteButtonRef} objectsData={objectsData} removeObjects={removeObjects}  />
+            {/* <Door/> */}
           </Suspense>
           
         </Canvas>

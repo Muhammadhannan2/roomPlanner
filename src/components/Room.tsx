@@ -21,7 +21,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
 
   // const [wall4Visibility, setWall4Visibility] = useState(true)
   const data = useContext(contextState);
-  const {setControls,controls,roomWidth,roomLength} = data
+  const {setControls,controls,roomWidth,roomLength,activeCamera} = data
   // const data = useContext(contextState)
    const { camera, scene,raycaster} = useThree();
    const [wall4Visibility, setWall4Visibility] = useState(true)
@@ -89,7 +89,8 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
 
           deleteButtonRef.current.style.left = buttonX + 60 + 'px'; // Adjust the 40 value as needed
           deleteButtonRef.current.style.top = buttonY + 'px'; 
-          deleteButtonRef.current.style.display = 'block'; 
+          deleteButtonRef.current.style.display = 'block'
+         
           //console.log(draggable)
         }
       }
@@ -131,7 +132,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
             (event.clientX / window.innerWidth) * 2 - 1,
             -(event.clientY / window.innerHeight) * 2 + 1
           );
-          console.log(draggable.current.position)
+          // console.log(draggable.current.position)
          const found = intersect(newMousePosition);
           if (found.length > 0) {
             for (let i = 0; i < found.length; i++) {
@@ -155,20 +156,14 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
               // deleteButtonRef.current.style.left = buttonX + 40 + 'px';
               deleteButtonRef.current.style.left = buttonX + 60 + 'px'; // Adjust the 40 value as needed
               deleteButtonRef.current.style.top = buttonY + 'px'; 
-      
-      
-              // const target = intersect(newMousePosition)[0].point.clone().add(offset);
-                // const target = found[0].point.clone().add(offset);
-              let target = found[i].point;
-              // const initialOffset = newMousePosition.clone().sub(initialMousePosition);
-              // const target = draggable.position.clone().add(initialOffset);
-              // draggable.position.copy(target)
-              // initialMousePosition.copy(newMousePosition);
-             
 
+              let target = found[i].point;
+ 
               if (draggable.current.userData.restrictVertical) {
-                const minX = -100;
-                const maxX = 100;
+                // const minX = -100;
+                // const maxX = 100;
+                minX = -((roomWidth/2));
+                maxX = ((roomWidth/2));
                 const minY = draggable.current.userData.minY;
                 const maxY = draggable.current.userData.maxY;
                 // const minZ = -46.6;
@@ -176,12 +171,13 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
        
                 if (
                   target.x >= minX && target.x <= maxX 
+                  
                   // && target.y >= minY && target.y <= maxY
                 ) {
+
                  // target.z = Math.max(target.z, -46.7);
                   // target.x = Math.max(Math.min(target.x, 49.3), -49.3);
                   // target.z = Math.max(Math.min(target.z, 49.5), -49.5);
-                  
                   target.y = Math.min(Math.max(target.y, minY), maxY);
                   draggable.current.position.x = target.x;
                   draggable.current.position.y = target.y;
@@ -191,6 +187,10 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     if(draggable.current.userData.rotationAxis==='y'){
                       draggable.current.rotation.y = 1.6;
                       console.log('here')
+                    }
+                    else if(draggable.current.userData.rotationAxis==='z' && draggable.current.userData.name === 'door'){
+                      draggable.current.rotation.z = 1.58;
+                      console.log(draggable.current.rotation.z);
                     }
                     else{
                       draggable.current.rotation.z = 0;
@@ -206,6 +206,11 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     if(draggable.current.userData.rotationAxis==='y'){
                       draggable.current.rotation.y = 6.3;
                     }
+                    else if(draggable.current.userData.rotationAxis==='z' && draggable.current.userData.name === 'door'){
+                      // draggable.current.rotation.z = 3.15;
+                      draggable.current.rotation.z = 0;
+                      console.log(draggable.current.rotation.z);
+                    }
                     else{
                       draggable.current.rotation.z = 11;
                     }
@@ -218,11 +223,17 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     if(draggable.current.userData.rotationAxis==='y'){
                       draggable.current.rotation.y = 3.1;
                     }
+                    else if(draggable.current.userData.rotationAxis==='z' && draggable.current.userData.name === 'door'){
+                      draggable.current.rotation.z = 3.15;
+                      // draggable.current.rotation.z = 0;
+                      console.log(draggable.current.rotation.z);
+                    }
                     else{
                       draggable.current.rotation.z = -11;
                     }
                     // target.z = Math.max(Math.min(target.z, 44.5), -48);
-                  }
+                
+                }
                 }
               } else {
                 var minX:any ;
@@ -247,7 +258,7 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                     maxZ = Math.floor(roomLength/2-15);
                    }
                   //  maxZ = (roomLength/3)-1;
-                   console.log(maxZ)
+                  //  console.log(maxZ)
                 }
                 else if(draggable.current.userData.size==='large'){
                   //  minX = -42.5;
@@ -255,8 +266,9 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
                   //  minZ = -33.5;
                   minX = -((roomWidth/2)-8.5);
                   maxX = ((roomWidth/2)-8.5);
-                  minZ = -(roomLength/3);
+                  minZ = -Math.floor((roomLength/3));
                   maxZ = Math.floor((roomLength/2)-10);
+                  // console.log(minZ)
                   if(roomLength>100){
                     minZ = -((roomLength/2)-10);
                     maxZ = Math.floor(roomLength/2-10);
@@ -346,15 +358,21 @@ export function Room  ({rotateButtonRef, deleteButtonRef,objectsData,removeObjec
       }
 
 useEffect(() => {
-
+  if(activeCamera==='orthographic'){
+    deleteButtonRef.current.style.display = 'none'
+    rotateButtonRef.current.style.display = 'none';
+  }
     // console.log(camera.position) 
     raycaster.camera = camera;
     deleteButtonRef.current.addEventListener('click',()=>removeObjects(draggable.current.userData.id))
     // deleteButtonRef.current.addEventListener('click',setControls(true))
     rotateButtonRef.current.addEventListener('click',rotate)
-    window.addEventListener('click',onClick)
+    if(activeCamera==='perspective'){
+      window.addEventListener('click',onClick)
+      window.addEventListener('mousedown',mouseDown)
+    }
+    
     window.addEventListener('mousemove',mouseMove)
-    window.addEventListener('mousedown',mouseDown)
     window.addEventListener('mouseup',mouseUp)
     // if (camera.position.x >= 90 || camera.position.x <= 120) {
     //   setWall4Visibility(false);
@@ -365,7 +383,7 @@ useEffect(() => {
     //   setWall4Visibility(true);
     //   console.log(wall4Visibility)
     // }
-    console.log(camera)
+    // console.log(camera)
   return () => {
     window.removeEventListener('click', onClick);
     window.removeEventListener('mousedown',mouseDown)
@@ -374,9 +392,7 @@ useEffect(() => {
   }
 }, [camera,camera.position,roomLength,roomWidth])
 
-// useFrame(() => {
-//   console.log('Camera Position:', camera.position);
-// });
+
 
     return (
       <>
@@ -427,7 +443,7 @@ useEffect(() => {
     
       return (
         <mesh receiveShadow castShadow userData={{ ground: true, name:'floor' }}>
-          <boxGeometry args={[roomWidth, 2, roomLength]} />
+          <boxGeometry args={[roomWidth, 1, roomLength]} />
           <meshPhongMaterial {...customMaterial} />
         </mesh>
       );

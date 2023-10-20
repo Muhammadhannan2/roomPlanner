@@ -8,13 +8,12 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
-  Link,
   OutlinedInput,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-
+import { Link } from "react-router-dom";
 function LoginLeft() {
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -90,7 +89,7 @@ function LoginLeft() {
         }}
         fullWidth={true}
       >
-        Login
+        <Link to='/planner' style={{color:'white',textDecoration:'none'}} >Login</Link> 
       </Button>
     </Box>
   );
